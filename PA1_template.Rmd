@@ -7,19 +7,50 @@ output:
 
 
 ## Loading and preprocessing the data
-
-
+```{r}
+actcsv <- unzip("./activity.zip")
+act <- read.csv(actcsv)
+byday <- factor(act, unique(act$date), exclude = NA)
+byinterval <-factor(act, unique(act$interval), exclude = NA)
+```
 
 ## What is mean total number of steps taken per day?
+```{r}
+stepsperday <- tapply(act$steps, act$date, sum, na.rm = T)
+hist(stepsperday, main = "Steps per day", xlab = "Steps", ylab = "Number of Days", col = "Red", breaks = 15)
+```
 
-
+The mean number of steps per day is: `mean(stepsperday)`
+The median number of steps per day is: `median(stepsperday)`
 
 ## What is the average daily activity pattern?
+```{r}
+intstepsmean <- tapply(act$steps, act$interval, mean, na.rm = T)
+ism <- as.numeric(intstepsmean)
+int <- as.numeric(levels(byinterval))
+plot(int, ism, type = 'l', main = "Steps throughout day", xlab = "Time Interval", ylab = "Mean Steps")
+```
 
+The interval with the most steps on average is: `int[[which.max(ism)]]` - `int[[which.max(ism) + 1]]`
 
 
 ## Imputing missing values
 
+The total number of rows with missing values is: `sum(!complete.cases(act))`
 
+```{r}
+pos <- which(is.na(act), arr.ind = T)
+ind <- match(act[pos, 3], int)
+act1 <- act
+act1[pos, 1] <- ism[ind]
+```
+
+```{r}
+stepsperday1 <- tapply(act1$steps, act1$date, sum, na.rm = T)
+hist(stepsperday1, main = "Adjusted steps per day", xlab = "Steps", ylab = "Number of Days", col = "Red", breaks = 15)
+```
+
+The mean number of steps per day is: `mean(stepsperday1)`
+The median number of steps per day is: `median(stepsperday1)`
 
 ## Are there differences in activity patterns between weekdays and weekends?
