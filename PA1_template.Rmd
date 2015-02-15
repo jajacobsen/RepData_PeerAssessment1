@@ -54,3 +54,23 @@ The mean number of steps per day is: `mean(stepsperday1)`
 The median number of steps per day is: `median(stepsperday1)`
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r}
+wd <- weekdays(as.Date(act1[, 2]))
+wact1 <- cbind(act1, wd)
+fact1 <- factor(wact1[, 4])
+levels(fact1) <- c("weekday", "weekday", "weekend", "weekend", "weekday", "weekday", "weekday")
+weekdact <- subset(wact1, fact1 == "weekday")
+weekeact <- subset(wact1, fact1 == "weekend")
+```
+
+```{r}
+intstepsmeanwd <- tapply(weekdact$steps, weekdact$interval, mean, na.rm = T)
+ismwd <- as.numeric(intstepsmeanwd)
+plot(int, ismwd, type = 'l', main = "Steps throughout day, wd", xlab = "Time Interval", ylab = "Mean Steps")
+```
+
+```{r}
+intstepsmeanwe <- tapply(weekeact$steps, weekeact$interval, mean, na.rm = T)
+ismwe <- as.numeric(intstepsmeanwe)
+plot(int, ismwe, type = 'l', main = "Steps throughout day, we", xlab = "Time Interval", ylab = "Mean Steps")
+```
